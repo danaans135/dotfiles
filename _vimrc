@@ -19,6 +19,8 @@ NeoBundle 'git://github.com/Shougo/vimshell.git'
 NeoBundle 'h1mesuke/vim-alignta'
 NeoBundle 'thinca/vim-quickrun'
 NeoBundle 'tyru/open-browser.vim'
+NeoBundle 'vim-scripts/vimwiki.git'
+NeoBundle 'tyru/restart.vim'
 "NeoBundle 'Align'
 "NeoBundle 'godlygeek/tabular'
 
