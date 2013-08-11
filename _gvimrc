@@ -1,0 +1,19 @@
+"IMEの状態をカラー表示
+if has('multi_byte_ime')
+  highlight Cursor guifg=NONE guibg=Green
+  highlight CursorIM guifg=NONE guibg=Purple
+endif
+
+"----------------------------------------
+"ツールバーを非表示
+set guioptions-=T
+"コマンドラインの高さ
+set cmdheight=1
+
+set columns=141
+set lines=45
+
+set guifont=MS_Gothic:h10:cSHIFTJIS
+
+colorscheme newspaper
+

@@ -1,0 +1,21 @@
+"3.7.1 (created: 2013/05/22 20:32:57)
+
+set hintchars=hjklasdfgyuiopqwertnmzxcvb
+"set nextpattern=\bnext\b,\bmore\b,next,^次(の)?ページ,\b次.*,→\b,^>$,^(>>|≫)$,^(>|≫),(>|≫)$
+"set previouspattern=\bprev|previous\b,prev,^前(の)?ページ,\b前.*,\b←,^<$,^(<<|≪)$,^(<|≪),(<|≪)$
+set nextpattern=^次(へ|の|ペ),^続き,\bnext\b,^>$,^(>>|&#187;)$,^(>|&#187;),(>|&#187;)$,\bmore\b
+set previouspattern=^前(へ|の|ペ),^戻る,\bprev|previous\b,^<$,^(<<|&#171;)$,^(<|&#171;),(<|&#171;)$
+set focuscontent
+set gui=nonavigation
+set visualbell
+
+map s :open about:mybookmarks<CR>
+map S :tabopen about:mybookmarks<CR>
+noremap h gT
+noremap l gt
+
+style -name commandline-ime chrome://* #liberator-commandline-command input {ime-mode: inactive;}
+
+source! $HOME/_vimperatorrc.local
+
+" vim: set ft=vim:
