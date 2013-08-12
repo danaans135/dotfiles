@@ -23,6 +23,7 @@ NeoBundle 'thinca/vim-quickrun'
 NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'vim-scripts/vimwiki.git'
 NeoBundle 'tyru/restart.vim'
+NeoBundle 'tpope/vim-fugitive'
 
 " カラースキーム
 NeoBundle 'altercation/vim-colors-solarized'
