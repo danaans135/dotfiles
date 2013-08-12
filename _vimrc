@@ -272,15 +272,6 @@ endfunction
 
 "vimfiler {{{
 
-""data_directory はramdiskを指定
-"if has('win32')
-"  let g:vimfiler_data_directory = 'R:\.vimfiler'
-"elseif  has('macunix')
-"  let g:vimfiler_data_directory = '/Volumes/RamDisk/.vimfiler'
-"else
-"  let g:vimfiler_data_directory = '/mnt/ramdisk/.vimfiler'
-"endif
-
 "vimデフォルトのエクスプローラをvimfilerで置き換える
 "let g:vimfiler_as_default_explorer = 1
 "セーフモードを無効にした状態で起動する
