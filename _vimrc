@@ -11,30 +11,30 @@ call neobundle#rc(expand('~/vimfiles/bundle'))
 NeoBundleFetch 'Shougo/neobundle.vim'
 
 NeoBundle 'Shougo/vimproc'
-NeoBundle 'git://github.com/Shougo/neocomplcache.git'
-NeoBundle 'git://github.com/Shougo/unite.vim.git'
+NeoBundle 'Shougo/vimfiler.git'
+NeoBundle 'Shougo/vimshell.git'
+NeoBundle 'Shougo/neocomplcache'
+NeoBundle 'Shougo/neosnippet'
+NeoBundle 'Shougo/unite.vim.git'
+NeoBundle 'tpope/vim-surround'
 NeoBundle 'ujihisa/unite-colorscheme'
-NeoBundle 'git://github.com/Shougo/vimfiler.git'
-NeoBundle 'git://github.com/Shougo/vimshell.git'
 NeoBundle 'h1mesuke/vim-alignta'
 NeoBundle 'thinca/vim-quickrun'
 NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'vim-scripts/vimwiki.git'
 NeoBundle 'tyru/restart.vim'
-"NeoBundle 'Align'
-"NeoBundle 'godlygeek/tabular'
 
 " ƒJƒ‰[ƒXƒL[ƒ€
 NeoBundle 'altercation/vim-colors-solarized'
 NeoBundle 'croaker/mustang-vim'
 NeoBundle 'jeffreyiacono/vim-colors-wombat'
-NeoBundle 'nanotech/jellybeans.vim'
-NeoBundle 'vim-scripts/Lucius'
-NeoBundle 'vim-scripts/Zenburn'
-NeoBundle 'mrkn/mrkn256.vim'
 NeoBundle 'jpo/vim-railscasts-theme'
+NeoBundle 'mrkn/mrkn256.vim'
+NeoBundle 'nanotech/jellybeans.vim'
 NeoBundle 'therubymug/vim-pyte'
 NeoBundle 'tomasr/molokai'
+NeoBundle 'vim-scripts/Lucius'
+NeoBundle 'vim-scripts/Zenburn'
 NeoBundle 'vim-scripts/newspaper.vim'
 
 filetype plugin indent on 
@@ -65,6 +65,7 @@ set smarttab                  "s“ª‚Ì—]”’“à‚Å Tab ‚ğ‘Å‚¿‚Ş‚ÆA'shiftwidth' ‚Ì
 set whichwrap=b,s,h,l,<,>,[,] "ƒJ[ƒ\ƒ‹‚ğs“ªAs––‚Å~‚Ü‚ç‚È‚¢‚æ‚¤‚É‚·‚é
 set nowrapscan                "ŒŸõ‚ğƒtƒ@ƒCƒ‹‚Ìæ“ª‚Öƒ‹[ƒv‚µ‚È‚¢
 set visualbell                "ƒrƒWƒ…ƒAƒ‹ƒxƒ‹‚ğg—p‚·‚é
+set cmdheight=1               "ƒRƒ}ƒ“ƒhs‚ğ1s‚É‚·‚é
 "set encoding=utf-8
 "scriptencoding cp932
 
@@ -73,6 +74,15 @@ nnoremap <silent> ,s :e $HOME/scratch.txt<CR>
 nnoremap <silent> ,fe :exe "e ".expand("%:h")<CR>
 nnoremap <silent> ,fl :<C-u>e $HOME/launch/<CR>
 nnoremap <silent> <Leader>fl :<C-u>VimFiler file:$HOME/launch/<CR>
+noremap <silent> <ESC><ESC> :<C-u>noh<CR>
+nmap <silent> ,x "jyy:@j<CR>
+map <F2> a<C-R>=strftime("%c")<CR><Esc>
+
+" netrwİ’è
+autocmd FileType netrw call s:netrw_settings()
+function! s:netrw_settings()
+  nnoremap <silent><buffer> ~ :<C-u>e $HOME<CR>
+endfunction
 
 "‘}“üƒ‚[ƒhAƒXƒe[ƒ^ƒXƒ‰ƒCƒ“‚ÌF‚ğ•ÏX{{{
 let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
@@ -134,7 +144,52 @@ endfunction
 map \w :call Browser ()<CR>
 "}}}
 
-inoremap <silent> <ESC> <ESC>:set iminsert=0<CR> 
+" •ÒWESC‚ÉIME‚ğƒIƒt‚É‚·‚éB {{{
+inoremap <silent> <ESC> <ESC>:set iminsert=0<CR>
+" }}}
+
+" F11 fullscreen {{{
+nnoremap <F11> :call ToggleFullScreen()<CR>
+function! ToggleFullScreen()
+  if &guioptions =~# 'C'
+    set guioptions-=C
+    if exists('s:go_temp')
+      if s:go_temp =~# 'm'
+        set guioptions+=m
+      endif
+      if s:go_temp =~# 'T'
+        set guioptions+=T
+      endif
+    endif
+    simalt ~r
+  else
+    let s:go_temp = &guioptions
+    set guioptions+=C
+    set guioptions-=m
+    set guioptions-=T
+    simalt ~x
+  endif
+endfunction
+"}}}
+
+" augroup {{{
+
+augroup mygroup
+  "au FileType scratch.txt call s:ScratchLoad()
+  "au BufReadPost scratch.txt call s:ScratchLoad()
+  au BufReadPost scratch.txt call s:ScratchLoad()
+  function! s:ScratchLoad()
+    if strftime("%m/%d", getftime(@%)) != strftime("%m/%d")
+      call s:AppendTime()
+    endif
+  endfunction
+  function! s:AppendTime()
+    exe "normal mmGo\<CR>}}}\<CR>".strftime("%m/%d")."\<ESC>20a=\<ESC>a{{{\<ESC>o\<ESC>'m"
+  endfunction
+augroup END
+
+"}}}
+"
 
 let g:quickrun_config = {}
 let g:quickrun_config.markdown = {
