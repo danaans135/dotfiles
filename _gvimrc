@@ -15,5 +15,5 @@ set lines=55
 
 set guifont=MS_Gothic:h10:cSHIFTJIS
 
-colorscheme newspaper
+colorscheme swandive
 
