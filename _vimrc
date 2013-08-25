@@ -75,8 +75,8 @@ set nowrap
 set cursorline
 set cursorcolumn
 
-nnoremap <silent> ,v         :e $HOME/_vimrc<CR>
-nnoremap <silent> ,vg        :e $HOME/_gvimrc<CR>
+nnoremap <silent> ,v         :e $HOME/dotfiles/_vimrc<CR>
+nnoremap <silent> ,vg        :e $HOME/dotfiles/_gvimrc<CR>
 nnoremap <silent> ,s         :e $HOME/scratch.txt<CR>
 nnoremap <silent> ,vs        :e $HOME/Documents//GitHub/vim-colors-swandive//colors/swandive.vim<CR>
 nnoremap <silent> ,fe        :exe "e ".expand("%:h")<CR>
@@ -94,6 +94,25 @@ autocmd FileType netrw call s:netrw_settings()
 function! s:netrw_settings()
   nnoremap <silent><buffer> ~ :<C-u>e $HOME<CR>
 endfunction
+
+" スニペットファイルの配置場所
+let g:NeoComplCache_SnippetsDir = '~/vimfiles/snippets'
+ 
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+" SuperTab like snippets behavior.
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)"
+\: pumvisible() ? "\<C-n>" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)"
+\: "\<TAB>"
+
+" For snippet_complete marker.
+if has('conceal')
+  set conceallevel=2 concealcursor=i
+endif
 
 "挿入モード時、ステータスラインの色を変更{{{
 let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
