@@ -78,7 +78,7 @@ set cursorcolumn
 nnoremap <silent> ,v         :e $HOME/dotfiles/_vimrc<CR>
 nnoremap <silent> ,vg        :e $HOME/dotfiles/_gvimrc<CR>
 nnoremap <silent> ,s         :e $HOME/scratch.txt<CR>
-nnoremap <silent> ,vs        :e $HOME/Documents//GitHub/vim-colors-swandive//colors/swandive.vim<CR>
+nnoremap <silent> ,vs        :e $HOME/Documents/GitHub/vim-colors-swandive/colors/swandive.vim<CR>
 nnoremap <silent> ,fe        :exe "e ".expand("%:h")<CR>
 nnoremap <silent> ,fl        :<C-u>e $HOME/launch/<CR>
 nnoremap <silent> <Leader>fl :<C-u>VimFiler file:$HOME/launch/<CR>
@@ -88,6 +88,9 @@ map               <F2>       a<C-R>=strftime("%c")<CR><Esc>
 nmap              ,oo        <plug>(openbrowser-open)
 nmap              ,os        <plug>(openbrowser-search)
 xnoremap          al         :Alignta<Space>
+
+vnoremap <silent> ,ta        :s/^\(\s*\)\(.*\)$/\1" \2" \& _/<CR>
+vnoremap <silent> ,tb        :s/^\(\s*\)" \(.*\)" \+& _$/\1\2/<CR>
 
 " netrw設定
 autocmd FileType netrw call s:netrw_settings()
@@ -325,6 +328,18 @@ function! DefConv() range
   let lnum = a:firstline
   while lnum <= a:lastline
     for [a, b] in [
+\       ["出荷先数量ワーク" , "MZ_W_AreaQty"      ],
+\       ["代表保管場所コード" , "InvLocNo"      ],
+\       ["商品CD"        , "SyouhinCode"      ] ,
+\       ["級品"          , "Kyuuhin"          ] ,
+\       ["出荷予定日"     , "SyukaDueDate"     ],
+\       ["方面別コード"  , "AreaCode"         ] ,
+\       ["方面名"        , "AreaName"         ] ,
+\       ["実数量"        , "InputQty"         ] ,
+\       ["モード"        , "JissekiInputMode" ] ,
+\       ["実績"          , "JissekiQty"       ] ,
+\       ["出荷区分"      , "SyukaType"        ] ,
+\       ["HHT出荷指示数" , "HhtSyukaShijiQty" ] ,
 \       ["出荷実績データ"     , "MZ_SyukaJisseki" ] ,
 \       ["出荷実績ＩＤ"       , "ID"              ] ,
 \       ["代表保管場所コード" , "InvLocNo"        ] ,
