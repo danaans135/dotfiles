@@ -25,6 +25,7 @@ NeoBundle 'vim-scripts/vimwiki.git'
 NeoBundle 'tyru/restart.vim'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'vim-scripts/batch.vim'
+NeoBundle 'danaans135/vim-plugin-commarepeat'
 
 " カラースキーム
 NeoBundle 'altercation/vim-colors-solarized'
@@ -74,7 +75,6 @@ set cmdheight=1               "コマンド行を1行にする
 set viewdir=$HOME/vimfiles/view
 set nowrap
 set cursorline
-set cursorcolumn
 
 nnoremap <silent> ,v         :e $HOME/dotfiles/_vimrc<CR>
 nnoremap <silent> ,vg        :e $HOME/dotfiles/_gvimrc<CR>
