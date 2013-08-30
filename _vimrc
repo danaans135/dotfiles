@@ -368,7 +368,8 @@ function! DefConv() range
 \       ["作成日付"       , "CreateDate"   ],
 \       ["更新ユーザーID" , "ModifyUserID" ],
 \       ["更新日付"       , "ModifyDate"   ]]
-      let repl = substitute(getline(lnum), "\\<".a."\\>", b, "g")
+      "let repl = substitute(getline(lnum), "\\<".a."\\>", b, "g")
+      let repl = substitute(getline(lnum), "\\<".b."\\>", a, "g")
       call setline(lnum, repl)
     endfor
     let lnum = lnum + 1
@@ -384,6 +385,26 @@ function! PropMaker() range
     "call setline(lnum, repl)
     let lnum = lnum + 1
   endwhile
+endfunction
+
+
+au BufReadPost SqlDefinition.xml setlocal foldmethod=expr foldexpr=MyHelpFold(v:lnum)
+
+function! MyHelpFold(lnum)
+  let line = getline(a:lnum)
+  let next = getline(a:lnum + 1)
+  if line =~ '^.*<Sql .*$'
+    return 1
+"  elseif next =~ '^\s*<Sql.*$'
+"    return '<1'
+  elseif line =~ '^\s*</Sql>$'
+    return '<1'
+  elseif line =~ '^\s*<--\s*$'
+    return '1'
+  elseif line =~ '^\s*-->\s*$'
+    return '<1'
+  endif
+  return '='
 endfunction
 
 "}}}
