@@ -26,6 +26,10 @@ NeoBundle 'tyru/restart.vim'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'vim-scripts/batch.vim'
 NeoBundle 'danaans135/vim-plugin-commarepeat'
+NeoBundle 'deton/jasegment.vim'
+NeoBundle 'danaans135/logiphys'
+NeoBundle 'mattn/emmet-vim'
+NeoBundle 'itchyny/lightline.vim'
 
 " カラースキーム
 NeoBundle 'altercation/vim-colors-solarized'
@@ -75,6 +79,8 @@ set cmdheight=1               "コマンド行を1行にする
 set viewdir=$HOME/vimfiles/view
 set nowrap
 set cursorline
+set laststatus=2
+set statusline=%<%f\ %m\ %r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=\ (%v,%l)/%L%8P\ 
 
 nnoremap <silent> ,v         :e $HOME/dotfiles/_vimrc<CR>
 nnoremap <silent> ,vg        :e $HOME/dotfiles/_gvimrc<CR>
@@ -85,10 +91,15 @@ nnoremap <silent> ,fl        :<C-u>e $HOME/launch/<CR>
 nnoremap <silent> <Leader>fl :<C-u>VimFiler file:$HOME/launch/<CR>
 noremap  <silent> <ESC><ESC> :<C-u>noh<CR>
 nmap     <silent> ,x         "jyy:@j<CR>
+nmap     <silent> <C-P>      :<C-u>bprev<CR>
+nmap     <silent> <C-N>      :<C-u>bnext<CR>
 map               <F2>       a<C-R>=strftime("%c")<CR><Esc>
 nmap              ,oo        <plug>(openbrowser-open)
 nmap              ,os        <plug>(openbrowser-search)
 xnoremap          al         :Alignta<Space>
+abbr              ymd        <C-R>=strftime("%Y/%m/%d")<CR>
+abbr              ymda       <C-R>=strftime("%Y/%m/%d（%a）")<CR>
+abbr              hm         <C-R>=strftime("%H:%M")<CR>
 
 vnoremap <silent> ,ta        :s/^\(\s*\)\(.*\)$/\1" \2" \& _/<CR>
 vnoremap <silent> ,tb        :s/^\(\s*\)" \(.*\)" \+& _$/\1\2/<CR>
@@ -99,12 +110,18 @@ function! s:netrw_settings()
   nnoremap <silent><buffer> ~ :<C-u>e $HOME<CR>
 endfunction
 
+    "let g:jasegment#highlight = 2
+
 " スニペットファイルの配置場所
-let g:NeoComplCache_SnippetsDir = '~/vimfiles/snippets'
- 
+"let g:NeoComplCache_Snippets_Dir = '~/vimfiles/snippets'
+"let g:neocomplcache_snippets_dir = '~/vimfiles/snippets'
+let g:neosnippet#snippets_directory='~/vimfiles/snippets'
+
+ " Plugin key-mappings.
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
+
 " SuperTab like snippets behavior.
 imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 \ "\<Plug>(neosnippet_expand_or_jump)"
@@ -117,6 +134,24 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 if has('conceal')
   set conceallevel=2 concealcursor=i
 endif
+
+"imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+"smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+"xmap <C-k>     <Plug>(neosnippet_expand_target)
+"" SuperTab like snippets behavior.
+"imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+"\ "\<Plug>(neosnippet_expand_or_jump)"
+"\: pumvisible() ? "\<C-n>" : "\<TAB>"
+"smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+"\ "\<Plug>(neosnippet_expand_or_jump)"
+"\: "\<TAB>"
+"
+"" For snippet_complete marker.
+"if has('conceal')
+"  set conceallevel=2 concealcursor=i
+"endif
+"
+
 
 "挿入モード時、ステータスラインの色を変更{{{
 let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
@@ -245,6 +280,11 @@ let g:quickrun_config.markdown = {
 "'<,'>s/^\(\S\+\) \(\S\+\)$/\\       ["\1","\2"],/
 "'<,'>Align ,/1 ]
 
+"\       ["コード名称"   , "CodeName"     ] ,
+"\       ["カテゴリID"   , "CategoryID"   ] ,
+"\       ["カテゴリ名称" , "CategoryName" ] ,
+"\       ["コード"       , "Code"         ] ,
+"
 "\       ["出荷実績データ"     , "MZ_SyukaJisseki" ] ,
 "\       ["出荷実績ＩＤ"       , "ID"              ] ,
 "\       ["代表保管場所コード" , "InvLocNo"        ] ,
@@ -329,6 +369,10 @@ function! DefConv() range
   let lnum = a:firstline
   while lnum <= a:lastline
     for [a, b] in [
+\       ["コード名称"   , "CodeName"     ] ,
+\       ["カテゴリID"   , "CategoryID"   ] ,
+\       ["カテゴリ名称" , "CategoryName" ] ,
+\       ["コード"       , "Code"         ] ,
 \       ["出荷先数量ワーク" , "MZ_W_AreaQty"      ],
 \       ["代表保管場所コード" , "InvLocNo"      ],
 \       ["商品CD"        , "SyouhinCode"      ] ,
@@ -367,7 +411,26 @@ function! DefConv() range
 \       ["作成ユーザーID" , "CreateUserID" ],
 \       ["作成日付"       , "CreateDate"   ],
 \       ["更新ユーザーID" , "ModifyUserID" ],
-\       ["更新日付"       , "ModifyDate"   ]]
+\       ["更新日付"       , "ModifyDate"   ],
+\       ["出荷予定"       , "SyukaYotei"   ],
+\       ["入力方面別コード"       , "InputAreaCode"   ],
+\       ["ログインID"       , "LoginID"   ],
+\       ["基準日"       , "baseDate"   ],
+\       ["方面指定フラグ"       , "isAreaSpecified"   ],
+\       ["受注番号"       , "jyuchuuNo"   ],
+\       ["リミット"       , "limit"   ],
+\       ["元棚番号"       , "MotoTanaNo"   ],
+\       ["移動数量"       , "MoveQty"   ],
+\       ["作業種別"       , "workType"   ],
+\       ["作業種別詳細"       , "workTypeDetail"   ],
+\       ["ページ番号"       , "pageNum"   ],
+\       ["商品名"       , "syouhinName"   ],
+\       ["出荷指示数"       , "syukaShijiQty"   ],
+\       ["発注番号"       , "HachuuNo"   ],
+\       ["検品区分"       , "KenpinType"   ],
+\       ["受入数"       , "UkeireQty"   ],
+\       ["棚入数"       , "TanaireQty"   ],
+\       ["計算方法"       , "CalcType"   ]]
       "let repl = substitute(getline(lnum), "\\<".a."\\>", b, "g")
       let repl = substitute(getline(lnum), "\\<".b."\\>", a, "g")
       call setline(lnum, repl)
@@ -406,6 +469,50 @@ function! MyHelpFold(lnum)
   endif
   return '='
 endfunction
+
+let g:user_emmet_settings = {
+\  'lang' : 'ja',
+\  'html' : {
+\    'filters' : 'html',
+\    'indentation' : '  '
+\  },
+\  'perl' : {
+\    'indentation' : '  ',
+\    'aliases' : {
+\      'req' : "require '|'"
+\    },
+\    'snippets' : {
+\      'use' : "use strict\nuse warnings\n\n",
+\      'w' : "warn \"${cursor}\";",
+\    },
+\  },
+\  'php' : {
+\    'extends' : 'html',
+\    'filters' : 'html,c',
+\  },
+\  'css' : {
+\    'filters' : 'fc',
+\  },
+\  'javascript' : {
+\    'snippets' : {
+\      'jq' : "$(function() {\n\t${cursor}${child}\n});",
+\      'jq:each' : "$.each(arr, function(index, item)\n\t${child}\n});",
+\      'fn' : "(function() {\n\t${cursor}\n})();",
+\      'tm' : "setTimeout(function() {\n\t${cursor}\n}, 100);",
+\    },
+\  },
+\ 'java' : {
+\  'indentation' : '    ',
+\  'snippets' : {
+\   'main': "public static void main(String[] args) {\n\t|\n}",
+\   'println': "System.out.println(\"|\");",
+\   'class': "public class | {\n}\n",
+\  },
+\ },
+\  'custom_expands1' : {
+\    '^\%(lorem\|lipsum\)\(\d*\)$' : function('emmet#lorem#ja#expand'),
+\  },
+\}
 
 "}}}
 
