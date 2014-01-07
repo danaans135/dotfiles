@@ -14,6 +14,8 @@ noremap l gt
 map <C-k> ogoogle<Space>
 map <C-S-k> tgoogle<Space>
 
+map <silent> <C-y> :js util.copyToClipboard(content.document.title, true)<cr>
+
 " コマンドラインIME制御
 style -name commandline-ime chrome://* #liberator-commandline-command input {ime-mode: inactive;}
 

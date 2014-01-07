@@ -10,6 +10,7 @@ call neobundle#rc(expand('~/vimfiles/bundle'))
 
 NeoBundleFetch 'Shougo/neobundle.vim'
 
+" よく使う
 NeoBundle 'Shougo/vimproc'
 NeoBundle 'Shougo/vimfiler.git'
 NeoBundle 'Shougo/vimshell.git'
@@ -17,19 +18,22 @@ NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/unite.vim.git'
 NeoBundle 'tpope/vim-surround'
-NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'h1mesuke/vim-alignta'
 NeoBundle 'thinca/vim-quickrun'
 NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'vim-scripts/vimwiki.git'
 NeoBundle 'tyru/restart.vim'
-NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'vim-scripts/batch.vim'
-NeoBundle 'danaans135/vim-plugin-commarepeat'
-NeoBundle 'deton/jasegment.vim'
-NeoBundle 'danaans135/logiphys'
 NeoBundle 'mattn/emmet-vim'
 NeoBundle 'itchyny/lightline.vim'
+" あまり使ってない
+NeoBundle 'ujihisa/unite-colorscheme'
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'vim-scripts/batch.vim'
+NeoBundle 'deton/jasegment.vim'
+" 自作
+NeoBundle 'danaans135/vim-plugin-commarepeat'
+NeoBundle 'danaans135/logiphys'
+" お試し
 
 " カラースキーム
 NeoBundle 'altercation/vim-colors-solarized'
@@ -89,14 +93,18 @@ nnoremap <silent> ,vs        :e $HOME/Documents/GitHub/vim-colors-swandive/color
 nnoremap <silent> ,fe        :exe "e ".expand("%:h")<CR>
 nnoremap <silent> ,fl        :<C-u>e $HOME/launch/<CR>
 nnoremap <silent> <Leader>fl :<C-u>VimFiler file:$HOME/launch/<CR>
+nnoremap <silent> ,h         :exe ":h ".expand("<cword>")<CR>
 noremap  <silent> <ESC><ESC> :<C-u>noh<CR>
 nmap     <silent> ,x         "jyy:@j<CR>
-nmap     <silent> <C-P>      :<C-u>bprev<CR>
-nmap     <silent> <C-N>      :<C-u>bnext<CR>
+"nmap     <silent> <C-P>      :<C-u>bprev<CR>
+"nmap     <silent> <C-N>      :<C-u>bnext<CR>
 map               <F2>       a<C-R>=strftime("%c")<CR><Esc>
 nmap              ,oo        <plug>(openbrowser-open)
 nmap              ,os        <plug>(openbrowser-search)
 xnoremap          al         :Alignta<Space>
+imap              <C-CR>      <C-Y>,
+imap              ;;         <ESC>
+
 abbr              ymd        <C-R>=strftime("%Y/%m/%d")<CR>
 abbr              ymda       <C-R>=strftime("%Y/%m/%d（%a）")<CR>
 abbr              hm         <C-R>=strftime("%H:%M")<CR>
@@ -244,6 +252,7 @@ endfunction
 " augroup {{{
 
 augroup mygroup
+	au!
   "au FileType scratch.txt call s:ScratchLoad()
   "au BufReadPost scratch.txt call s:ScratchLoad()
   au BufReadPost scratch.txt call s:ScratchLoad()
@@ -257,6 +266,9 @@ augroup mygroup
   endfunction
 augroup END
 
+" grep後にcwinを表示
+autocmd QuickFixCmdPost make,grep,grepadd,vimgrep,vimgrepadd cwin
+
 " asp
 au BufNewFile,BufRead *.aspx setf aspx
 
@@ -265,6 +277,13 @@ au BufWinLeave *.sql mkview
 au BufWinEnter *.sql silent loadview
 
 "}}}
+
+" vimwiki {{{
+  let g:vimwiki_list = [
+            \ {},
+            \ {'path': '~/vw/vimtips/', 'path_html': '~/vw_html/vimtips/'}]
+" }}}
+
 
 let g:quickrun_config = {}
 let g:quickrun_config.markdown = {
@@ -513,6 +532,19 @@ let g:user_emmet_settings = {
 \    '^\%(lorem\|lipsum\)\(\d*\)$' : function('emmet#lorem#ja#expand'),
 \  },
 \}
+
+function! s:open_sandbox()
+  let dir = $HOME . '/.vim_sandbox'
+  if !isdirectory(dir)
+    call mkdir(dir, 'p')
+  endif
+
+  let filename = input('New File: ', dir.strftime('/%Y-%m-%d-%H%M.'))
+  if filename != ''
+    execute 'edit ' . filename
+  endif
+endfunction
+command! -nargs=0 Sandbox call s:open_sandbox()
 
 "}}}
 
