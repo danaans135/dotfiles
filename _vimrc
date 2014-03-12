@@ -10,7 +10,6 @@ call neobundle#rc(expand('~/vimfiles/bundle'))
 
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-" よく使う
 NeoBundle 'Shougo/vimproc'
 NeoBundle 'Shougo/vimfiler.git'
 NeoBundle 'Shougo/vimshell.git'
@@ -25,15 +24,16 @@ NeoBundle 'vim-scripts/vimwiki.git'
 NeoBundle 'tyru/restart.vim'
 NeoBundle 'mattn/emmet-vim'
 NeoBundle 'itchyny/lightline.vim'
-" あまり使ってない
+
 NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'vim-scripts/batch.vim'
 NeoBundle 'deton/jasegment.vim'
-" 自作
+
 NeoBundle 'danaans135/vim-plugin-commarepeat'
 NeoBundle 'danaans135/logiphys'
-" お試し
+
+NeoBundle 'thinca/vim-singleton'
 
 " カラースキーム
 NeoBundle 'altercation/vim-colors-solarized'
@@ -57,6 +57,7 @@ NeoBundleCheck
 
 " Setting {{{
 
+" options {{{
 set autoindent                "新しい行のインデントを現在行と同じにする
 set backupdir=$HOME/vimbackup "バックアップファイルを作るディレクトリ
 set browsedir=buffer          "ファイル保存ダイアログの初期ディレクトリをバッファファイル位置に設定
@@ -64,6 +65,7 @@ set clipboard=unnamed         "クリップボードをWindowsと連携
 set directory=$HOME/vimbackup "スワップファイル用のディレクトリ
 set expandtab                 "タブの代わりに空白文字を挿入する
 set hidden                    "変更中のファイルでも、保存しないで他のファイルを表示
+set history=50
 set incsearch                 "インクリメンタルサーチを行う
 set list
 set listchars=tab:^\ ,trail:~
@@ -82,10 +84,14 @@ set cmdheight=1               "コマンド行を1行にする
 "scriptencoding cp932
 set viewdir=$HOME/vimfiles/view
 set nowrap
-set cursorline
+"set cursorline
 set laststatus=2
 set statusline=%<%f\ %m\ %r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=\ (%v,%l)/%L%8P\ 
+set sessionoptions-=folds
+set sessionoptions-=options
+" }}}
 
+" map, abbr {{{
 nnoremap <silent> ,v         :e $HOME/dotfiles/_vimrc<CR>
 nnoremap <silent> ,vg        :e $HOME/dotfiles/_gvimrc<CR>
 nnoremap <silent> ,s         :e $HOME/scratch.txt<CR>
@@ -96,14 +102,24 @@ nnoremap <silent> <Leader>fl :<C-u>VimFiler file:$HOME/launch/<CR>
 nnoremap <silent> ,h         :exe ":h ".expand("<cword>")<CR>
 noremap  <silent> <ESC><ESC> :<C-u>noh<CR>
 nmap     <silent> ,x         "jyy:@j<CR>
+nmap     <silent> Yp         :let @*=expand("%:p")<CR>
+nmap     <silent> Yh         :let @*=expand("%:p:h")<CR>
+nmap     <silent> Yt         :let @*=expand("%:t")<CR>
+nmap     <silent> <Space>xm  :exe '!start "c:\Program Files (x86)\MIFES9\MIW.exe"' . expand("%")<CR>
+nmap              <Space>{   o{{{<CR>}}}<ESC>
+nmap              n          nzz
+nmap              N          Nzz
 "nmap     <silent> <C-P>      :<C-u>bprev<CR>
 "nmap     <silent> <C-N>      :<C-u>bnext<CR>
 map               <F2>       a<C-R>=strftime("%c")<CR><Esc>
 nmap              ,oo        <plug>(openbrowser-open)
 nmap              ,os        <plug>(openbrowser-search)
 xnoremap          al         :Alignta<Space>
+xnoremap          ,x         "jy:@j<CR>
 imap              <C-CR>      <C-Y>,
 imap              ;;         <ESC>
+nnoremap <silent> ,is :VimShell<CR>
+nnoremap <silent> ,ip :VimShellPop<CR>
 
 abbr              ymd        <C-R>=strftime("%Y/%m/%d")<CR>
 abbr              ymda       <C-R>=strftime("%Y/%m/%d（%a）")<CR>
@@ -111,6 +127,8 @@ abbr              hm         <C-R>=strftime("%H:%M")<CR>
 
 vnoremap <silent> ,ta        :s/^\(\s*\)\(.*\)$/\1" \2" \& _/<CR>
 vnoremap <silent> ,tb        :s/^\(\s*\)" \(.*\)" \+& _$/\1\2/<CR>
+
+" }}}
 
 " netrw設定
 autocmd FileType netrw call s:netrw_settings()
@@ -252,29 +270,52 @@ endfunction
 " augroup {{{
 
 augroup mygroup
-	au!
-  "au FileType scratch.txt call s:ScratchLoad()
-  "au BufReadPost scratch.txt call s:ScratchLoad()
-  au BufReadPost scratch.txt call s:ScratchLoad()
+
+  autocmd!
+  autocmd BufReadPost scratch.txt call s:ScratchLoad()
+  autocmd BufReadPost *.wiki call s:WikiLoad()
+  autocmd BufReadPost ebid-order.log* call s:HiEbidOrderLog()
+  autocmd BufReadPost * call s:CheckRo()
+
+  function! s:CheckRo()
+"    if &readonly
+"      hi Normal guibg=#400a0a
+"    else
+"      hi Normal guibg=#0a0a0a
+"    endif
+  endfunction
+
   function! s:ScratchLoad()
     if strftime("%m/%d", getftime(@%)) != strftime("%m/%d")
       call s:AppendTime()
     endif
   endfunction
+
   function! s:AppendTime()
     exe "normal mmGo\<CR>}}}\<CR>".strftime("%m/%d")."\<ESC>20a=\<ESC>a{{{\<ESC>o\<ESC>'m"
   endfunction
+
+  function! s:WikiLoad()
+    nmap <F5> :VimwikiAll2HTML<CR>
+  endfunction
+
+  function! s:HiEbidOrderLog()
+    syntax match lh "^[^[]*\[[^]]*\] \[[^]]*\]"
+    highlight link lh Comment
+  endfunction
+
 augroup END
+
 
 " grep後にcwinを表示
 autocmd QuickFixCmdPost make,grep,grepadd,vimgrep,vimgrepadd cwin
 
 " asp
-au BufNewFile,BufRead *.aspx setf aspx
+autocmd BufNewFile,BufRead *.aspx setf aspx
 
 "*.sqlファイルを編集するときにビューを自動的に保存、復元する
-au BufWinLeave *.sql mkview
-au BufWinEnter *.sql silent loadview
+autocmd BufWinLeave *.sql mkview
+autocmd BufWinEnter *.sql silent loadview
 
 "}}}
 
@@ -284,6 +325,9 @@ au BufWinEnter *.sql silent loadview
             \ {'path': '~/vw/vimtips/', 'path_html': '~/vw_html/vimtips/'}]
 " }}}
 
+" singleton {{{
+call singleton#enable()
+" }}}
 
 let g:quickrun_config = {}
 let g:quickrun_config.markdown = {
@@ -293,201 +337,6 @@ let g:quickrun_config.markdown = {
       \ 'hook/output_encode/enable': 1,
       \ 'hook/output_encode/encoding': 'utf-8:utf-8'
       \ }
-
-"'<,'>s/	\+/ /g
-"'<,'>s/\s\+$//
-"'<,'>s/^\(\S\+\) \(\S\+\)$/\\       ["\1","\2"],/
-"'<,'>Align ,/1 ]
-
-"\       ["コード名称"   , "CodeName"     ] ,
-"\       ["カテゴリID"   , "CategoryID"   ] ,
-"\       ["カテゴリ名称" , "CategoryName" ] ,
-"\       ["コード"       , "Code"         ] ,
-"
-"\       ["出荷実績データ"     , "MZ_SyukaJisseki" ] ,
-"\       ["出荷実績ＩＤ"       , "ID"              ] ,
-"\       ["代表保管場所コード" , "InvLocNo"        ] ,
-"\       ["出荷予定日"         , "SyukaDueDate"    ] ,
-"\       ["方面別コード"       , "AreaCode"        ] ,
-"\       ["級品"               , "Kyuuhin"         ] ,
-"\       ["商品コード"         , "SyouhinCode"     ] ,
-"\       ["実績数"             , "JissekiQty"      ] ,
-"\       ["実績入力日"         , "JissekiDate"     ] ,
-"\       ["出荷区分"           , "SyukaType"       ] ,
-"\       ["ロットNO"           , "LotNo"           ] ,
-"\       ["連携フラグ"         , "RenkeiFlag"      ] ,
-"
-"\       ["出荷先数量ワーク" , "MZ_W_AreaQty"      ],
-"\       ["代表保管場所コード" , "InvLocNo"      ],
-"\       ["商品CD"        , "SyouhinCode"      ] ,
-"\       ["級品"          , "Kyuuhin"          ] ,
-"\       ["出荷予定日"     , "SyukaDueDate"     ],
-"\       ["方面別コード"  , "AreaCode"         ] ,
-"\       ["方面名"        , "AreaName"         ] ,
-"\       ["実数量"        , "InputQty"         ] ,
-"\       ["モード"        , "JissekiInputMode" ] ,
-"\       ["実績"          , "JissekiQty"       ] ,
-"\       ["出荷区分"      , "SyukaType"        ] ,
-"\       ["HHT出荷指示数" , "HhtSyukaShijiQty" ] ,
-"
-"\       ["商品棚出数量ワーク","MZ_W_SyouhinTana"],
-"\       ["商品CD"         , "SyouhinCode"      ],
-"\       ["級品"           , "Kyuuhin"          ],
-"\       ["出荷予定日"     , "SyukaDueDate"     ],
-"\       ["棚番"           , "TanaNo"           ],
-"\       ["商品名"         , "Description"      ],
-"\       ["実数量"         , "InputQty"         ],
-"\       ["実績入力モード" , "JissekiInputMode" ],
-"\       ["ロットNO"       , "LotNo"            ],
-"
-"\       ["処理順"         , "SeqNo"        ],
-"\       ["削除フラグ"     , "DeleteFlag"   ],
-"\       ["作成ユーザーID" , "CreateUserID" ],
-"\       ["作成日付"       , "CreateDate"   ],
-"\       ["更新ユーザーID" , "ModifyUserID" ],
-"\       ["更新日付"       , "ModifyDate"   ]]
-"\       ["運送会社マスタ"       , "MM_TransCom"       ],
-"\       ["会社番号"             , "I_COM_CODE"        ],
-"\       ["運送会社コード"       , "I_TRANS_COM_CD"    ],
-"\       ["ＴＣコード"           , "I_TC_CD"           ],
-"\       ["運送会社名"           , "I_TRANS_COM_DESC"  ],
-"\       ["ＴＣ名"               , "I_TC_DESC"         ],
-"\       ["コイズミ拠点コード"   , "I_KOIZUMI_BASE_CD" ],
-"\       ["グループコード"       , "I_GRP_CD"          ],
-"\       ["優先順位"             , "I_PRIORITY"        ],
-"\       ["方面別コード"         , "I_DISTRICT_CD"     ],
-"\       ["出荷便"               , "I_SHIP_SERVICE"    ],
-"\       ["ＨＨＴ表示名（略称）" , "I_HHT_DSP_DESC"    ],
-"\       ["照会項目"             , "I_INQ_ITEM"        ],
-"
-"\       ["出荷指示データ"     , "MZ_SyukaShiji" ],
-"\       ["出荷区分"           , "SyukaType"     ],
-"\       ["代表保管場所コード" , "InvLocNo"      ],
-"\       ["出荷予定日"         , "SyukaDueDate"  ],
-"\       ["積込日"             , "PickupDate"    ],
-"\       ["出荷指示数"         , "SyukaShijiQty" ],
-"\       ["在庫引当数"         , "HikiateQty"    ],
-"\       ["入荷待ち数"         , "WaitQty"       ],
-"\       ["方面別コード"       , "AreaCode"      ],
-"\       ["商品コード"         , "SyouhinCode"   ],
-"
-"\       ["棚番マスタ"         , "MM_Tana"    ],
-"\       ["棚番"               , "TanaNo"     ],
-"\       ["代表保管場所コード" , "InvLocNo"   ],
-"\       ["代表保管場所名"     , "InvLocName" ],
-"\       ["棚番グループ"       , "TanaGrp"    ],
-"
-"\       ["センター在庫データビュー" , "MZ_V_LocationInventories" ],
-"\       ["代表保管場所コード"       , "InvLocNo"                 ],
-"\       ["商品コード"               , "SyouhinCode"              ],
-"\       ["級品"                     , "Kyuuhin"                  ],
-"\       ["棚番"                     , "TanaNo"                   ],
-"\       ["在庫数"                   , "InvQty"                   ],
-
-function! DefConv() range
-  let lnum = a:firstline
-  while lnum <= a:lastline
-    for [a, b] in [
-\       ["コード名称"   , "CodeName"     ] ,
-\       ["カテゴリID"   , "CategoryID"   ] ,
-\       ["カテゴリ名称" , "CategoryName" ] ,
-\       ["コード"       , "Code"         ] ,
-\       ["出荷先数量ワーク" , "MZ_W_AreaQty"      ],
-\       ["代表保管場所コード" , "InvLocNo"      ],
-\       ["商品CD"        , "SyouhinCode"      ] ,
-\       ["級品"          , "Kyuuhin"          ] ,
-\       ["出荷予定日"     , "SyukaDueDate"     ],
-\       ["方面別コード"  , "AreaCode"         ] ,
-\       ["方面名"        , "AreaName"         ] ,
-\       ["実数量"        , "InputQty"         ] ,
-\       ["モード"        , "JissekiInputMode" ] ,
-\       ["実績"          , "JissekiQty"       ] ,
-\       ["出荷区分"      , "SyukaType"        ] ,
-\       ["HHT出荷指示数" , "HhtSyukaShijiQty" ] ,
-\       ["出荷実績データ"     , "MZ_SyukaJisseki" ] ,
-\       ["出荷実績ＩＤ"       , "ID"              ] ,
-\       ["代表保管場所コード" , "InvLocNo"        ] ,
-\       ["出荷予定日"         , "SyukaDueDate"    ] ,
-\       ["方面別コード"       , "AreaCode"        ] ,
-\       ["級品"               , "Kyuuhin"         ] ,
-\       ["商品コード"         , "SyouhinCode"     ] ,
-\       ["実績数"             , "JissekiQty"      ] ,
-\       ["実績入力日"         , "JissekiDate"     ] ,
-\       ["出荷区分"           , "SyukaType"       ] ,
-\       ["ロットNO"           , "LotNo"           ] ,
-\       ["連携フラグ"         , "RenkeiFlag"      ] ,
-\       ["商品棚出数量ワーク","MZ_W_SyouhinTana"],
-\       ["商品CD"         , "SyouhinCode"      ],
-\       ["級品"           , "Kyuuhin"          ],
-\       ["出荷予定日"     , "SyukaDueDate"     ],
-\       ["棚番"           , "TanaNo"           ],
-\       ["商品名"         , "Description"      ],
-\       ["実数量"         , "InputQty"         ],
-\       ["実績入力モード" , "JissekiInputMode" ],
-\       ["ロットNO"       , "LotNo"            ],
-\       ["処理順"         , "SeqNo"        ],
-\       ["削除フラグ"     , "DeleteFlag"   ],
-\       ["作成ユーザーID" , "CreateUserID" ],
-\       ["作成日付"       , "CreateDate"   ],
-\       ["更新ユーザーID" , "ModifyUserID" ],
-\       ["更新日付"       , "ModifyDate"   ],
-\       ["出荷予定"       , "SyukaYotei"   ],
-\       ["入力方面別コード"       , "InputAreaCode"   ],
-\       ["ログインID"       , "LoginID"   ],
-\       ["基準日"       , "baseDate"   ],
-\       ["方面指定フラグ"       , "isAreaSpecified"   ],
-\       ["受注番号"       , "jyuchuuNo"   ],
-\       ["リミット"       , "limit"   ],
-\       ["元棚番号"       , "MotoTanaNo"   ],
-\       ["移動数量"       , "MoveQty"   ],
-\       ["作業種別"       , "workType"   ],
-\       ["作業種別詳細"       , "workTypeDetail"   ],
-\       ["ページ番号"       , "pageNum"   ],
-\       ["商品名"       , "syouhinName"   ],
-\       ["出荷指示数"       , "syukaShijiQty"   ],
-\       ["発注番号"       , "HachuuNo"   ],
-\       ["検品区分"       , "KenpinType"   ],
-\       ["受入数"       , "UkeireQty"   ],
-\       ["棚入数"       , "TanaireQty"   ],
-\       ["計算方法"       , "CalcType"   ]]
-      "let repl = substitute(getline(lnum), "\\<".a."\\>", b, "g")
-      let repl = substitute(getline(lnum), "\\<".b."\\>", a, "g")
-      call setline(lnum, repl)
-    endfor
-    let lnum = lnum + 1
-  endwhile
-endfunction
-command! -range DefConv :<line1>,<line2>call DefConv()
-
-function! PropMaker() range
-  let lnum = a:firstline
-  while lnum <= a:lastline
-    exe "normal aX"
-    "let repl = substitute(getline(lnum), "\\<".a."\\>", b, "g")
-    "call setline(lnum, repl)
-    let lnum = lnum + 1
-  endwhile
-endfunction
-
-
-au BufReadPost SqlDefinition.xml setlocal foldmethod=expr foldexpr=MyHelpFold(v:lnum)
-
-function! MyHelpFold(lnum)
-  let line = getline(a:lnum)
-  let next = getline(a:lnum + 1)
-  if line =~ '^.*<Sql .*$'
-    return 1
-"  elseif next =~ '^\s*<Sql.*$'
-"    return '<1'
-  elseif line =~ '^\s*</Sql>$'
-    return '<1'
-  elseif line =~ '^\s*<--\s*$'
-    return '1'
-  elseif line =~ '^\s*-->\s*$'
-    return '<1'
-  endif
-  return '='
-endfunction
 
 let g:user_emmet_settings = {
 \  'lang' : 'ja',
@@ -546,6 +395,13 @@ function! s:open_sandbox()
 endfunction
 command! -nargs=0 Sandbox call s:open_sandbox()
 
+function! s:new_plugin()
+  let plugin_name = input("plugin name ? ")
+
+  echo "hi " . plugin_name
+endfunction
+command! -nargs=0 PluginNew call s:new_plugin()
+
 "}}}
 
 "unite {{{
@@ -555,7 +411,7 @@ nnoremap [unite] <Nop>
 nmap <Space>f [unite]
 
 "インサートモードで開始しない
-let g:unite_enable_start_insert = 0
+let g:unite_enable_start_insert = 1
 
 "" For ack.
 "if executable('ack-grep')
@@ -578,6 +434,10 @@ let g:unite_source_file_mru_filename_format = ''
 
 "bookmarkだけホームディレクトリに保存
 let g:unite_source_bookmark_directory = $HOME . '/.unite/bookmark'
+
+" To track long mru history.
+let g:unite_source_file_mru_long_limit = 3000
+let g:unite_source_directory_mru_long_limit = 3000
 
 "現在開いているファイルのディレクトリ下のファイル一覧。
 "開いていない場合はカレントディレクトリ
