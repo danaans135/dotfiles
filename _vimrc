@@ -120,6 +120,8 @@ imap              <C-CR>      <C-Y>,
 imap              ;;         <ESC>
 nnoremap <silent> ,is :VimShell<CR>
 nnoremap <silent> ,ip :VimShellPop<CR>
+nnoremap <silent> ,te :<C-u>exe "!start explorer " . expand("%:h")<CR>
+nnoremap <silent> gx :<C-u>exe "!start explorer " . expand("<cfile>")<CR>
 
 abbr              ymd        <C-R>=strftime("%Y/%m/%d")<CR>
 abbr              ymda       <C-R>=strftime("%Y/%m/%dÅi%aÅj")<CR>

@@ -4,7 +4,6 @@ if has('multi_byte_ime')
   highlight CursorIM guifg=NONE guibg=Purple
 endif
 
-"----------------------------------------
 "ツールバーを非表示
 set guioptions-=T
 "コマンドラインの高さ
@@ -17,3 +16,5 @@ set guifont=MS_Gothic:h10:cSHIFTJIS
 
 colorscheme swandive
 
+autocmd FocusGained * set transparency=230
+autocmd FocusLost * set transparency=200
