@@ -34,6 +34,7 @@ NeoBundle 'danaans135/vim-plugin-commarepeat'
 NeoBundle 'danaans135/logiphys'
 
 NeoBundle 'thinca/vim-singleton'
+NeoBundle 'aklt/plantuml-syntax'
 
 " カラースキーム
 NeoBundle 'altercation/vim-colors-solarized'
@@ -381,6 +382,10 @@ let g:user_emmet_settings = {
 \ },
 \  'custom_expands1' : {
 \    '^\%(lorem\|lipsum\)\(\d*\)$' : function('emmet#lorem#ja#expand'),
+\  },
+\  'jsp' : {
+\    'filters' : 'html',
+\    'indentation' : '  '
 \  },
 \}
 
