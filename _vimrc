@@ -25,13 +25,13 @@ NeoBundle 'tyru/restart.vim'
 NeoBundle 'mattn/emmet-vim'
 NeoBundle 'itchyny/lightline.vim'
 
-NeoBundle 'ujihisa/unite-colorscheme'
-NeoBundle 'tpope/vim-fugitive'
+"NeoBundle 'ujihisa/unite-colorscheme'
+"NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'vim-scripts/batch.vim'
 NeoBundle 'deton/jasegment.vim'
 
-NeoBundle 'danaans135/vim-plugin-commarepeat'
-NeoBundle 'danaans135/logiphys'
+"NeoBundle 'danaans135/vim-plugin-commarepeat'
+"NeoBundle 'danaans135/logiphys'
 
 NeoBundle 'thinca/vim-singleton'
 NeoBundle 'aklt/plantuml-syntax'
