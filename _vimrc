@@ -6,7 +6,10 @@ if has("vim_starting")
   set runtimepath+=$HOME/vimfiles/bundle/neobundle.vim/
 endif
 
-call neobundle#rc(expand('~/vimfiles/bundle'))
+"call neobundle#rc(expand('~/vimfiles/bundle'))
+call neobundle#begin(expand('~/.vim/bundle/'))
+NeoBundleFetch 'Shougo/neobundle.vim'
+call neobundle#end()
 
 NeoBundleFetch 'Shougo/neobundle.vim'
 
@@ -16,6 +19,7 @@ NeoBundle 'Shougo/vimshell.git'
 NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/unite.vim.git'
+NeoBundle 'Shougo/neomru.vim'
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'h1mesuke/vim-alignta'
 NeoBundle 'thinca/vim-quickrun'
@@ -29,6 +33,7 @@ NeoBundle 'itchyny/lightline.vim'
 "NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'vim-scripts/batch.vim'
 NeoBundle 'deton/jasegment.vim'
+NeoBundle 'kannokanno/previm'
 
 "NeoBundle 'danaans135/vim-plugin-commarepeat'
 "NeoBundle 'danaans135/logiphys'
@@ -37,17 +42,17 @@ NeoBundle 'thinca/vim-singleton'
 NeoBundle 'aklt/plantuml-syntax'
 
 " カラースキーム
-NeoBundle 'altercation/vim-colors-solarized'
-NeoBundle 'croaker/mustang-vim'
-NeoBundle 'jeffreyiacono/vim-colors-wombat'
-NeoBundle 'jpo/vim-railscasts-theme'
-NeoBundle 'mrkn/mrkn256.vim'
-NeoBundle 'nanotech/jellybeans.vim'
-NeoBundle 'therubymug/vim-pyte'
-NeoBundle 'tomasr/molokai'
-NeoBundle 'vim-scripts/Lucius'
-NeoBundle 'vim-scripts/Zenburn'
-NeoBundle 'vim-scripts/newspaper.vim'
+"NeoBundle 'altercation/vim-colors-solarized'
+"NeoBundle 'croaker/mustang-vim'
+"NeoBundle 'jeffreyiacono/vim-colors-wombat'
+"NeoBundle 'jpo/vim-railscasts-theme'
+"NeoBundle 'mrkn/mrkn256.vim'
+"NeoBundle 'nanotech/jellybeans.vim'
+"NeoBundle 'therubymug/vim-pyte'
+"NeoBundle 'tomasr/molokai'
+"NeoBundle 'vim-scripts/Lucius'
+"NeoBundle 'vim-scripts/Zenburn'
+"NeoBundle 'vim-scripts/newspaper.vim'
 NeoBundle 'danaans135/vim-colors-swandive'
 
 filetype plugin indent on 
@@ -325,7 +330,14 @@ autocmd BufWinEnter *.sql silent loadview
 " vimwiki {{{
   let g:vimwiki_list = [
             \ {},
-            \ {'path': '~/vw/vimtips/', 'path_html': '~/vw_html/vimtips/'}]
+            \ {'path': '~/vw/vimtips/', 'path_html': '~/vw_html/vimtips/'},
+            \ {
+            \   'path': '~/vw/hello/',
+            \   'path_html': '~/vw/hello/html',
+            \   'template_path': '~/vw/hello/template',
+            \   'template_default': 'default',
+            \   'template_ext': '.html'
+            \ }]
 " }}}
 
 " singleton {{{
@@ -340,6 +352,8 @@ let g:quickrun_config.markdown = {
       \ 'hook/output_encode/enable': 1,
       \ 'hook/output_encode/encoding': 'utf-8:utf-8'
       \ }
+let g:previm_open_cmd = ''
+
 
 let g:user_emmet_settings = {
 \  'lang' : 'ja',
