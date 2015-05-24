@@ -331,9 +331,9 @@ autocmd BufWinEnter *.sql silent loadview
             \ {},
             \ {'path': '~/vw/vimtips/', 'path_html': '~/vw_html/vimtips/'},
             \ {
-            \   'path': '~/vw/vmdoc/',
-            \   'path_html': '~/vw/vmdoc/html',
-            \   'template_path': '~/vw/vmdoc/template',
+            \   'path': '~/vw/vwdoc/',
+            \   'path_html': '~/vw/vwdoc/html',
+            \   'template_path': '~/vw/vwdoc/template',
             \   'template_default': 'default',
             \   'template_ext': '.html'
             \ }]
