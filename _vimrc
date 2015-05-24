@@ -9,9 +9,6 @@ endif
 "call neobundle#rc(expand('~/vimfiles/bundle'))
 call neobundle#begin(expand('~/.vim/bundle/'))
 NeoBundleFetch 'Shougo/neobundle.vim'
-call neobundle#end()
-
-NeoBundleFetch 'Shougo/neobundle.vim'
 
 NeoBundle 'Shougo/vimproc'
 NeoBundle 'Shougo/vimfiler.git'
@@ -54,6 +51,8 @@ NeoBundle 'aklt/plantuml-syntax'
 "NeoBundle 'vim-scripts/Zenburn'
 "NeoBundle 'vim-scripts/newspaper.vim'
 NeoBundle 'danaans135/vim-colors-swandive'
+
+call neobundle#end()
 
 filetype plugin indent on 
 
